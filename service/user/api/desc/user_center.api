@@ -3,7 +3,7 @@ syntax = "v1"
 info (
 	title:  "User Center API"
 	desc:   "用户中心 HTTP 网关,对接 UserService gRPC"
-	verson: "1.0.0"
+	version: "1.0.0"
 )
 
 //导入
