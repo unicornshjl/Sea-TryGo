@@ -29,6 +29,9 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 	}
 }
 
+//register代码存在一定问题:
+//用First和Create可能会在高并发情境下产生错误,出现两个人注册了同一个的情况
+
 func (l *RegisterLogic) Register(req *types.CreateUserReq) (resp *types.CreateUserResp, err error) {
 	user := model.User{}
 
@@ -37,21 +40,21 @@ func (l *RegisterLogic) Register(req *types.CreateUserReq) (resp *types.CreateUs
 		return nil, errors.New("用户名已存在")
 	}
 
-	TruePassword, e := cryptx.PassWordEncrypt(req.Password)
+	truePassword, e := cryptx.PasswordEncrypt(req.Password)
 	if e != nil {
 		return nil, e
 	}
 
 	user = model.User{
 		Username:  req.Username,
-		Password:  TruePassword,
+		Password:  truePassword,
 		Email:     req.Email,
 		ExtraInfo: req.Extrainfo,
 	}
-	result := l.svcCtx.DB.Create(&user)
+	err = l.svcCtx.DB.Create(&user).Error
 
-	if result != nil {
-		return nil, result.Error
+	if err != nil {
+		return nil, err
 	}
 
 	return &types.CreateUserResp{
