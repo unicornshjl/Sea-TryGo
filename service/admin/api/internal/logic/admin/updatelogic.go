@@ -31,7 +31,10 @@ func NewUpdateLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UpdateLogi
 }
 
 func (l *UpdateLogic) Update(req *types.UpdateSelfReq) (resp *types.UpdateSelfResp, err error) {
-	userId := l.ctx.Value("userId").(json.Number)
+	userId, ok := l.ctx.Value("userId").(json.Number)
+	if !ok {
+		return nil, errors.New("Token 解析异常")
+	}
 	id, er := userId.Int64()
 	if er != nil {
 		return nil, er
