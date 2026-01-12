@@ -45,8 +45,11 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err erro
 	}
 
 	correct := cryptx.CheckPassword(user.Password, password)
-	if correct != true {
+	if !correct {
 		return nil, errors.New("用户名或密码错误")
+	}
+	if user.Status == 1 {
+		return nil, errors.New("用户已被封禁")
 	}
 	now := time.Now().Unix()
 	accessSecret := l.svcCtx.Config.Auth.AccessSecret
