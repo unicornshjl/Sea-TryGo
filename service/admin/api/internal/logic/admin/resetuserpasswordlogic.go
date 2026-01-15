@@ -5,12 +5,10 @@ package admin
 
 import (
 	"context"
-	"errors"
 
-	"sea-try-go/service/admin/api/internal/model"
 	"sea-try-go/service/admin/api/internal/svc"
 	"sea-try-go/service/admin/api/internal/types"
-	"sea-try-go/service/common/cryptx"
+	"sea-try-go/service/admin/rpc/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -30,20 +28,14 @@ func NewResetuserpasswordLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 }
 
 func (l *ResetuserpasswordLogic) Resetuserpassword(req *types.ResetUserPasswordReq) (resp *types.ResetUserPasswordResp, err error) {
-	id := req.Id
-	user := model.User{}
-	err = l.svcCtx.DB.Where("id = ?", id).First(&user).Error
-	if err != nil {
-		return nil, errors.New("用户不存在")
+	rpcReq := &pb.ResetUserPasswordReq{
+		Id: req.Id,
 	}
-	var password string
-	password, err = cryptx.PasswordEncrypt(l.svcCtx.Config.System.DefaultPassword)
+	rpcResp, err := l.svcCtx.AdminRpc.ResetUserPassword(l.ctx, rpcReq)
 	if err != nil {
 		return nil, err
 	}
-	user.Password = password
-	err = l.svcCtx.DB.Model(&user).Update("password", password).Error
 	return &types.ResetUserPasswordResp{
-		Success: true,
+		Success: rpcResp.Success,
 	}, nil
 }
