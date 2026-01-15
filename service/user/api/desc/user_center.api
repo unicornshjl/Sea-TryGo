@@ -58,4 +58,3 @@ service usercenter {
 	@handler deleteuser
 	delete /user/delete (DeleteUserReq) returns (DeleteUserResp)
 }
-

@@ -4,25 +4,21 @@
 package svc
 
 import (
-	"log"
 	"sea-try-go/service/user/api/internal/config"
+	"sea-try-go/service/user/rpc/userservice"
 
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type ServiceContext struct {
-	Config config.Config
-	DB     *gorm.DB
+	Config  config.Config
+	UserRpc userservice.UserService
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	db, err := gorm.Open(postgres.Open(c.DataSource), &gorm.Config{})
-	if err != nil {
-		log.Fatalln("数据库连接失败:", err)
-	}
+
 	return &ServiceContext{
-		Config: c,
-		DB:     db,
+		Config:  c,
+		UserRpc: userservice.NewUserService(zrpc.MustNewClient(c.UserRpc)),
 	}
 }
