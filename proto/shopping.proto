@@ -4,5 +4,5 @@ package shopping;
 option go_package = ".";
 
 service shoppingService{
-  rpc
+
 }
