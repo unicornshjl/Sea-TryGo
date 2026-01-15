@@ -6,9 +6,9 @@ package admin
 import (
 	"context"
 
-	"sea-try-go/service/admin/api/internal/model"
 	"sea-try-go/service/admin/api/internal/svc"
 	"sea-try-go/service/admin/api/internal/types"
+	"sea-try-go/service/admin/rpc/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,12 +28,14 @@ func NewDeleteLogic(ctx context.Context, svcCtx *svc.ServiceContext) *DeleteLogi
 }
 
 func (l *DeleteLogic) Delete(req *types.DeleteUserReq) (resp *types.DeleteUserResp, err error) {
-	id := req.Id
-	err = l.svcCtx.DB.Where("id = ?", id).Delete(&model.User{}).Error
+	rpcReq := &pb.DeleteUserReq{
+		Id: req.Id,
+	}
+	rpcResp, err := l.svcCtx.AdminRpc.DeleteUser(l.ctx, rpcReq)
 	if err != nil {
 		return nil, err
 	}
 	return &types.DeleteUserResp{
-		Success: true,
+		Success: rpcResp.Success,
 	}, nil
 }
