@@ -6,9 +6,9 @@ package admin
 import (
 	"context"
 
-	"sea-try-go/service/admin/api/internal/model"
 	"sea-try-go/service/admin/api/internal/svc"
 	"sea-try-go/service/admin/api/internal/types"
+	"sea-try-go/service/admin/rpc/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,32 +28,30 @@ func NewGetuserlistLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Getus
 }
 
 func (l *GetuserlistLogic) Getuserlist(req *types.GetUserListReq) (resp *types.GetUserListResp, err error) {
-	var users []model.User
-	var total int64
-	db := l.svcCtx.DB.Model(&model.User{})
-	if len(req.Keyword) > 0 {
-		keyword := "%" + req.Keyword + "%"
-		db = db.Where("username LIKE ? OR email LIKE ?", keyword)
+	rpcReq := &pb.GetUserListReq{
+		Page:     req.Page,
+		PageSize: req.PageSize,
+		Keyword:  req.Keyword,
 	}
-	if err := db.Count(&total).Error; err != nil {
-		return nil, err
-	}
-	list := make([]types.UserInfo, 0)
-	offset := (req.Page - 1) * req.PageSize
-	err = db.Offset(int(offset)).Limit(int(req.PageSize)).Order("id desc").Find(&users).Error
+
+	rpcResp, err := l.svcCtx.AdminRpc.GetUserList(l.ctx, rpcReq)
 	if err != nil {
 		return nil, err
 	}
-	for _, user := range users {
-		list = append(list, types.UserInfo{
-			Id:        user.Id,
-			Username:  user.Username,
-			Email:     user.Email,
-			Extrainfo: user.ExtraInfo,
-		})
+	var list []types.UserInfo
+	if rpcResp.List != nil {
+		for _, v := range rpcResp.List {
+			list = append(list, types.UserInfo{
+				Id:        v.Id,
+				Username:  v.Username,
+				Email:     v.Email,
+				Status:    int64(v.Status),
+				Extrainfo: v.ExtraInfo,
+			})
+		}
 	}
 	return &types.GetUserListResp{
 		List:  list,
-		Total: total,
+		Total: rpcResp.Total,
 	}, nil
 }
