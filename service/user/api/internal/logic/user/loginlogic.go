@@ -8,11 +8,10 @@ import (
 	"errors"
 	"time"
 
-	"sea-try-go/service/common/cryptx"
 	"sea-try-go/service/common/jwt"
-	"sea-try-go/service/user/api/internal/model"
 	"sea-try-go/service/user/api/internal/svc"
 	"sea-try-go/service/user/api/internal/types"
+	"sea-try-go/service/user/rpc/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -32,33 +31,36 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 }
 
 func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err error) {
-	username := req.Username
-	password := req.Password
 
-	user := model.User{}
+	rpcReq := &pb.LoginReq{
+		Username: req.Username,
+		Password: req.Password,
+	}
 
-	//未找到和输入密码错误都显示用户名或密码错误,未找到不能提示找不到用户,否则存在安全隐患
+	rpcResp, er := l.svcCtx.UserRpc.Login(l.ctx, rpcReq)
 
-	err = l.svcCtx.DB.Where("username = ?", username).First(&user).Error
-	if err != nil {
+	if er != nil {
+		return nil, er
+	}
+
+	if rpcResp.Status == 1 {
 		return nil, errors.New("用户名或密码错误")
 	}
 
-	correct := cryptx.CheckPassword(user.Password, password)
-	if !correct {
-		return nil, errors.New("用户名或密码错误")
-	}
-	if user.Status == 1 {
+	if rpcResp.Status == 2 {
 		return nil, errors.New("用户已被封禁")
 	}
+
 	now := time.Now().Unix()
 	accessSecret := l.svcCtx.Config.Auth.AccessSecret
 	accessExpire := l.svcCtx.Config.Auth.AccessExpire
 
-	token, er := jwt.GetToken(accessSecret, now, accessExpire, int64(user.Id))
-	if er != nil {
-		return nil, er
+	token, e := jwt.GetToken(accessSecret, now, accessExpire, int64(rpcResp.Id))
+
+	if e != nil {
+		return nil, e
 	}
+
 	return &types.LoginResp{
 		Token: token,
 	}, nil
