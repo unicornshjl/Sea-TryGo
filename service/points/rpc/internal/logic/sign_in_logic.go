@@ -9,22 +9,22 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type AddArticleExposureLogic struct {
+type SignInLogic struct {
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 	logx.Logger
 }
 
-func NewAddArticleExposureLogic(ctx context.Context, svcCtx *svc.ServiceContext) *AddArticleExposureLogic {
-	return &AddArticleExposureLogic{
+func NewSignInLogic(ctx context.Context, svcCtx *svc.ServiceContext) *SignInLogic {
+	return &SignInLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
 		Logger: logx.WithContext(ctx),
 	}
 }
 
-func (l *AddArticleExposureLogic) AddArticleExposure(in *__.AddArticleExposureReq) (*__.AddArticleExposureResp, error) {
+func (l *SignInLogic) SignIn(in *__.SignInReq) (*__.SignInResp, error) {
 	// todo: add your logic here and delete this line
 
-	return &__.AddArticleExposureResp{}, nil
+	return &__.SignInResp{}, nil
 }

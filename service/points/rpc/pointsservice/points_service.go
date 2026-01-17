@@ -14,23 +14,18 @@ import (
 )
 
 type (
-	AddArticleExposureReq  = __.AddArticleExposureReq
-	AddArticleExposureResp = __.AddArticleExposureResp
-	Article                = __.Article
-	Data                   = __.Data
-	GetUserArticleReq      = __.GetUserArticleReq
-	GetUserArticleResp     = __.GetUserArticleResp
-	GetUserPointsReq       = __.GetUserPointsReq
-	GetUserPointsResp      = __.GetUserPointsResp
-	LoginPointsReq         = __.LoginPointsReq
-	LoginPointsResp        = __.LoginPointsResp
-	PointsInfo             = __.PointsInfo
+	AddArticlePointReq         = __.AddArticlePointReq
+	AddArticlePointResp        = __.AddArticlePointResp
+	GetUserAddPointHistoryReq  = __.GetUserAddPointHistoryReq
+	GetUserAddPointHistoryResp = __.GetUserAddPointHistoryResp
+	PointsRecord               = __.PointsRecord
+	SignInReq                  = __.SignInReq
+	SignInResp                 = __.SignInResp
 
 	PointsService interface {
-		LoginPoints(ctx context.Context, in *LoginPointsReq, opts ...grpc.CallOption) (*LoginPointsResp, error)
-		GetUserPoints(ctx context.Context, in *GetUserPointsReq, opts ...grpc.CallOption) (*GetUserPointsResp, error)
-		GetUserArticle(ctx context.Context, in *GetUserArticleReq, opts ...grpc.CallOption) (*GetUserArticleResp, error)
-		AddArticleExposure(ctx context.Context, in *AddArticleExposureReq, opts ...grpc.CallOption) (*AddArticleExposureResp, error)
+		SignIn(ctx context.Context, in *SignInReq, opts ...grpc.CallOption) (*SignInResp, error)
+		AddArticlePoint(ctx context.Context, in *AddArticlePointReq, opts ...grpc.CallOption) (*AddArticlePointResp, error)
+		GetUserAddPointHistory(ctx context.Context, in *GetUserAddPointHistoryReq, opts ...grpc.CallOption) (*GetUserAddPointHistoryResp, error)
 	}
 
 	defaultPointsService struct {
@@ -44,22 +39,17 @@ func NewPointsService(cli zrpc.Client) PointsService {
 	}
 }
 
-func (m *defaultPointsService) LoginPoints(ctx context.Context, in *LoginPointsReq, opts ...grpc.CallOption) (*LoginPointsResp, error) {
+func (m *defaultPointsService) SignIn(ctx context.Context, in *SignInReq, opts ...grpc.CallOption) (*SignInResp, error) {
 	client := __.NewPointsServiceClient(m.cli.Conn())
-	return client.LoginPoints(ctx, in, opts...)
+	return client.SignIn(ctx, in, opts...)
 }
 
-func (m *defaultPointsService) GetUserPoints(ctx context.Context, in *GetUserPointsReq, opts ...grpc.CallOption) (*GetUserPointsResp, error) {
+func (m *defaultPointsService) AddArticlePoint(ctx context.Context, in *AddArticlePointReq, opts ...grpc.CallOption) (*AddArticlePointResp, error) {
 	client := __.NewPointsServiceClient(m.cli.Conn())
-	return client.GetUserPoints(ctx, in, opts...)
+	return client.AddArticlePoint(ctx, in, opts...)
 }
 
-func (m *defaultPointsService) GetUserArticle(ctx context.Context, in *GetUserArticleReq, opts ...grpc.CallOption) (*GetUserArticleResp, error) {
+func (m *defaultPointsService) GetUserAddPointHistory(ctx context.Context, in *GetUserAddPointHistoryReq, opts ...grpc.CallOption) (*GetUserAddPointHistoryResp, error) {
 	client := __.NewPointsServiceClient(m.cli.Conn())
-	return client.GetUserArticle(ctx, in, opts...)
-}
-
-func (m *defaultPointsService) AddArticleExposure(ctx context.Context, in *AddArticleExposureReq, opts ...grpc.CallOption) (*AddArticleExposureResp, error) {
-	client := __.NewPointsServiceClient(m.cli.Conn())
-	return client.AddArticleExposure(ctx, in, opts...)
+	return client.GetUserAddPointHistory(ctx, in, opts...)
 }

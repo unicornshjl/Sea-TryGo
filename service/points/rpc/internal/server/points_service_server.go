@@ -23,22 +23,17 @@ func NewPointsServiceServer(svcCtx *svc.ServiceContext) *PointsServiceServer {
 	}
 }
 
-func (s *PointsServiceServer) LoginPoints(ctx context.Context, in *__.LoginPointsReq) (*__.LoginPointsResp, error) {
-	l := logic.NewLoginPointsLogic(ctx, s.svcCtx)
-	return l.LoginPoints(in)
+func (s *PointsServiceServer) SignIn(ctx context.Context, in *__.SignInReq) (*__.SignInResp, error) {
+	l := logic.NewSignInLogic(ctx, s.svcCtx)
+	return l.SignIn(in)
 }
 
-func (s *PointsServiceServer) GetUserPoints(ctx context.Context, in *__.GetUserPointsReq) (*__.GetUserPointsResp, error) {
-	l := logic.NewGetUserPointsLogic(ctx, s.svcCtx)
-	return l.GetUserPoints(in)
+func (s *PointsServiceServer) AddArticlePoint(ctx context.Context, in *__.AddArticlePointReq) (*__.AddArticlePointResp, error) {
+	l := logic.NewAddArticlePointLogic(ctx, s.svcCtx)
+	return l.AddArticlePoint(in)
 }
 
-func (s *PointsServiceServer) GetUserArticle(ctx context.Context, in *__.GetUserArticleReq) (*__.GetUserArticleResp, error) {
-	l := logic.NewGetUserArticleLogic(ctx, s.svcCtx)
-	return l.GetUserArticle(in)
-}
-
-func (s *PointsServiceServer) AddArticleExposure(ctx context.Context, in *__.AddArticleExposureReq) (*__.AddArticleExposureResp, error) {
-	l := logic.NewAddArticleExposureLogic(ctx, s.svcCtx)
-	return l.AddArticleExposure(in)
+func (s *PointsServiceServer) GetUserAddPointHistory(ctx context.Context, in *__.GetUserAddPointHistoryReq) (*__.GetUserAddPointHistoryResp, error) {
+	l := logic.NewGetUserAddPointHistoryLogic(ctx, s.svcCtx)
+	return l.GetUserAddPointHistory(in)
 }
