@@ -11,7 +11,7 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	dbConf := model.DBConf{
+	dbConfig := model.DBConf{
 		Host:     c.Postgres.Host,
 		Port:     c.Postgres.Port,
 		User:     c.Postgres.User,
@@ -19,7 +19,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		DBName:   c.Postgres.DBName,
 		Mode:     c.Postgres.Mode,
 	}
-	db := model.InitDB(dbConf)
+	db := model.InitDB(dbConfig)
 	return &ServiceContext{
 		Config:    c,
 		UserModel: model.NewUserModel(db),
