@@ -9,14 +9,14 @@ import (
 	"strings"
 	"sync"
 
-	z_trace "github.com/zeromicro/go-zero/core/trace"
 	"github.com/zeromicro/go-zero/core/logx"
+	z_trace "github.com/zeromicro/go-zero/core/trace"
 )
 
 // Logger 日志工具结构体（替代全局变量，支持多实例/并发安全）
 type Logger struct {
-	serviceName string       // 服务名（用于日志标识）
-	once        sync.Once    // 确保初始化只执行一次
+	serviceName string    // 服务名（用于日志标识）
+	once        sync.Once // 确保初始化只执行一次
 }
 
 // 全局实例（方便业务层快速调用，也可按需创建独立实例）
@@ -47,7 +47,7 @@ func Init(svcName string) {
 // ctx：上下文（用于提取TraceID）
 // code：业务错误码
 // err：原始错误对象
-func LogBusinessErr(ctx context.Context,  code int, err error) {
+func LogBusinessErr(ctx context.Context, code int, err error) {
 	globalLogger.logBusinessErr(ctx, code, err)
 }
 
@@ -65,16 +65,15 @@ func LogFatal(ctx context.Context, err error) {
 	globalLogger.logFatal(ctx, err)
 }
 
-
 // logBusinessErr 私有实现：业务错误日志
 func (l *Logger) logBusinessErr(ctx context.Context, code int, err error) {
 	// 1. 校验服务名是否初始化
 	if l.serviceName == "" {
 		panic("logger not initialized, call logger.Init() first")
 	}
-	errorReason:="unknown error"
-	if err!=nil{
-		errorReason= err.Error()
+	errorReason := "no return,missing task error"
+	if err != nil {
+		errorReason = err.Error()
 	}
 
 	// 2. 采集单步调用信息（文件行号、函数名）
@@ -127,7 +126,7 @@ func (l *Logger) logInfo(ctx context.Context, msg string) {
 	}
 
 	// 提取TraceID
-	traceID :=z_trace.TraceIDFromContext(ctx)
+	traceID := z_trace.TraceIDFromContext(ctx)
 	if traceID == "" {
 		traceID = "unknown"
 	}
@@ -148,11 +147,10 @@ func (l *Logger) logFatal(ctx context.Context, err error) {
 	if l.serviceName == "" {
 		panic("logger not initialized, call logger.Init() first")
 	}
-	errorReason:="unknown error"
-	if err!=nil{
-		errorReason= err.Error()
+	errorReason := "no return,missing task error "
+	if err != nil {
+		errorReason = err.Error()
 	}
-
 
 	// 采集调用信息
 	pc, file, line, ok := runtime.Caller(2) // skip=2：跳过当前方法+LogFatal，获取业务调用方
@@ -188,7 +186,6 @@ func (l *Logger) logFatal(ctx context.Context, err error) {
 	// 兜底退出（极端场景）
 	os.Exit(1)
 }
-
 
 func getFuncName(pc uintptr) string {
 	if pc == 0 {
