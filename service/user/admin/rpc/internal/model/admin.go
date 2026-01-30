@@ -71,7 +71,7 @@ func (m *AdminModel) FindOneAdminByUsername(ctx context.Context, username string
 	if err == nil {
 		return &admin, nil
 	}
-	if err == ErrorNotFound {
+	if err == gorm.ErrRecordNotFound {
 		return nil, ErrorNotFound
 	}
 	return nil, err
